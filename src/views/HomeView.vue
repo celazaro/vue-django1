@@ -1,10 +1,31 @@
 <template>
 
+  <NavbarComponents @getSearchText="search" />
+
+  <HeroComponents />
+
+
   <!-- Fruits Shop Start-->
   <div class="container-fluid fruite py-1">
     <div class="container py-1">
       <div class="tab-class text-center">
         <div class=" ">
+
+          <div class="col-lg-12 " v-if="searchTextRule">
+            
+            <h1> Productos con el texto indicado <strong>{{ searchTextRule }} </strong></h1>
+            <a
+                  class="btn btn-primary rounded-pill m-1 mb-5"
+                  style="width: 300px"
+                  href="#"
+                  role="button"
+                  @click="resetFilter"
+            >Ver todos los productos
+            </a>
+            <div class="alert alert-danger" role="alert" v-if="productosFiltrados.length === 0 "  >
+              No existen productos con el texto indicado para la búqueda           </div>
+          </div>
+
           <div class="col-lg-12 " v-if="categoriaSeleccionada != null">
             
             <h1> Productos de la categoría <strong>{{ categoriaSeleccionada }} </strong></h1>
@@ -19,7 +40,8 @@
             <div class="alert alert-danger" role="alert" v-if="productosFiltrados.length === 0 "  >
               Lamentamos comunicar que esta categoría no tiene productos disponibles!!           </div>
           </div>
-          <div class="col-lg-12 " v-if = "categoriaSeleccionada === null">
+
+          <div class="col-lg-12 " v-if = "categoriaSeleccionada === null && searchTextRule === null">
             <h1>Nuestros Productos</h1>
             <ul class="nav nav-pills d-inline-flex text-center mb-5">
               <li class="nav-item">
@@ -93,14 +115,38 @@
 
 import axios from "axios"
 import { ref, onMounted } from "vue"
+
 import NavbarComponents from '../components/NavbarComponents.vue'
+import HeroComponents from '../components/HeroComponents.vue';
 
 const categorias = ref([]) 
 const productos = ref([])  
 const productosFiltrados = ref([]) 
 const categoriaSeleccionada = ref(null)
+const searchTextRule = ref(null)
+
+const search = (searchText) => {
+  categoriaSeleccionada.value = null
+  searchTextRule.value = searchText
+
+  if (searchText) {
+    // voy a filtrar los datos
+      productosFiltrados.value = productos.value.filter((prod) => {
+        const productoNombre = prod.nombre.toLowerCase();
+        const productoDescripcion = prod.descripcion.toLowerCase(); 
+        const searchTerm = searchText.toLowerCase();
+        return (
+          productoNombre.includes(searchTerm) ||
+          productoDescripcion.includes(searchTerm)
+        )
+      })
+  } else {
+        productosFiltrados.value = productos.value
+    }
+}
 
 const categoriaID = (categoriaID, categoriaNombre) => {
+      searchTextRule.value = null
       categoriaSeleccionada.value = categoriaNombre;
       if (categoriaID) {
         productosFiltrados.value = productos.value.filter((prod) => prod.categoria === categoriaID);
@@ -111,6 +157,7 @@ const categoriaID = (categoriaID, categoriaNombre) => {
 
 const resetFilter = () => {
       categoriaSeleccionada.value = null
+      searchTextRule.value = null
       productosFiltrados.value = productos.value
     }
   
