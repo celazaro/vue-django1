@@ -30,11 +30,9 @@
 
 </template>
 
-<script>
-export default {
-  name: 'NavbarComponents',
-  
-}
+<script setup >
+
+
 </script>
 
 

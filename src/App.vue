@@ -1,10 +1,9 @@
 <template>
-
   <div class="container px-0">
-    <NavbarComponents></NavbarComponents>
+    <NavbarComponents />
   </div>
 
-    <!-- Hero Start -->
+      <!-- Hero Start -->
   <div class="container-fluid py-1 mb-1 ">
       <div class="container py-1 text-center">
           
@@ -22,22 +21,15 @@
 
   <router-view/>
 
- <FooterComponents></FooterComponents>
+  <FooterComponents />
 
 </template>
 
-<script>
+<script setup >
 
-import FooterComponents from './components/FooterComponents.vue';
 import NavbarComponents from './components/NavbarComponents.vue';
+import FooterComponents from './components/FooterComponents.vue';
 
-export default {
-  name: 'App',
-  components: {
-    FooterComponents,
-    NavbarComponents
-  }
-}
 </script>
 
 

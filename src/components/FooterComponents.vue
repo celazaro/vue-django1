@@ -19,11 +19,8 @@
 
 </template>
 
-<script>
-export default {
-  name: 'FooterComponents',
-  
-}
+<script setup >
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

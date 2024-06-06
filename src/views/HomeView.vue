@@ -1,12 +1,13 @@
 <template>
+
   <!-- Fruits Shop Start-->
   <div class="container-fluid fruite py-1">
     <div class="container py-1">
       <div class="tab-class text-center">
         <div class=" ">
-          <div class="col-lg-12 " v-if = "categoriaNombre != null">
+          <div class="col-lg-12 " v-if="categoriaSeleccionada != null">
             
-            <h1> Productos de la categoría <strong>{{ categoriaNombre }} </strong></h1>
+            <h1> Productos de la categoría <strong>{{ categoriaSeleccionada }} </strong></h1>
             <a
                   class="btn btn-primary rounded-pill m-1 mb-5"
                   style="width: 300px"
@@ -16,10 +17,9 @@
             >Ver todos los productos
             </a>
             <div class="alert alert-danger" role="alert" v-if="productosFiltrados.length === 0 "  >
-              No existen productos en esta categoría!
-            </div>
+              Lamentamos comunicar que esta categoría no tiene productos disponibles!!           </div>
           </div>
-          <div class="col-lg-12 " v-if = "categoriaNombre === null">
+          <div class="col-lg-12 " v-if = "categoriaSeleccionada === null">
             <h1>Nuestros Productos</h1>
             <ul class="nav nav-pills d-inline-flex text-center mb-5">
               <li class="nav-item">
@@ -32,7 +32,7 @@
                   role="button"
                   v-for="cat in categorias"
                   :key="cat.id"
-                  @click="getCategoriaID(cat.id, cat.nombre)"
+                  @click="categoriaID(cat.id, cat.nombre)"
                   >{{ cat.nombre }}</a
                 >
               </li>
@@ -89,52 +89,45 @@
   <!-- Fruits Shop End-->
 </template>
 
-<script>
-import axios from "axios";
+<script setup >
 
-export default {
-  name: "HomeView",
+import axios from "axios"
+import { ref, onMounted } from "vue"
+import NavbarComponents from '../components/NavbarComponents.vue'
 
-  data() {
-    return {
-      categorias: [],
-      productos: [],
-      productosFiltrados: [],
-      categoriaNombre: null,
-    };
-  },
+const categorias = ref([]) 
+const productos = ref([])  
+const productosFiltrados = ref([]) 
+const categoriaSeleccionada = ref(null)
 
-  methods: {
-    getCategoriaID(categoriaID, categoriaNombre) {
-      this.categoriaNombre = categoriaNombre;
+const categoriaID = (categoriaID, categoriaNombre) => {
+      categoriaSeleccionada.value = categoriaNombre;
       if (categoriaID) {
-        this.productosFiltrados = this.allProductos.filter((prod) => prod.categoria === categoriaID);
+        productosFiltrados.value = productos.value.filter((prod) => prod.categoria === categoriaID);
       } else {
-        this.productosFiltrados = this.allProductos
+        productosFiltrados.value = productos.value
       }
-    },
-
-    resetFilter() {
-      this.categoriaNombre = null
-      this.productosFiltrados = this.allProductos
     }
 
-
-  },
-
-  mounted() {
-    axios
+const resetFilter = () => {
+      categoriaSeleccionada.value = null
+      productosFiltrados.value = productos.value
+    }
+  
+onMounted(() => {
+  axios
       .get("http://127.0.0.1:8000/api/categoria/")
-      .then((response) => (this.categorias = response.data))
-      .catch((error) => console.log(error));
+      .then(response => {
+        categorias.value = response.data})
+      .catch(error => { console.log(error) })
     
     axios
       .get("http://127.0.0.1:8000/api/productos/")
       .then(response => {
-        this.allProductos = response.data
-        this.productosFiltrados = this.allProductos
+        productos.value = response.data
+        productosFiltrados.value = productos.value
       })
-      .catch((error) => console.log(error));
-  },
-};
+      .catch(error => {console.log(error) })
+})
+
 </script>
